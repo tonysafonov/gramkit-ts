@@ -127,7 +127,8 @@ on the box, 2 workers each. Score = users held 5 minutes with p95 < 500 ms, p99 
 | gramkit-ts on Bun, hot queries `.prepare()`d | 3,700 | 953 | 1.1 ms |
 | Reference: plain FastAPI + asyncpg, no ORM, no middleware | 2,700 | 709 | 1.4 ms |
 
-Details, CPU split, memory and caveats: [`docs/benchmarks/2026-11-08-conduit.md`](docs/benchmarks/2026-11-08-conduit.md). Both benches are in this repo: [`bench/conduit/`](bench/conduit/) (TypeScript) and [`bench/conduit-python/`](bench/conduit-python/) (Python gramkit), with raw results in [`bench/conduit/results/`](bench/conduit/results/).
+How it was measured: [howmanyusers](https://github.com/tonysafonov/howmanyusers), a Claude Code skill for load-testing
+a backend this way. Details, CPU split, memory and caveats: [`docs/benchmarks/2026-11-08-conduit.md`](docs/benchmarks/2026-11-08-conduit.md). Both benches are in this repo: [`bench/conduit/`](bench/conduit/) (TypeScript) and [`bench/conduit-python/`](bench/conduit-python/) (Python gramkit), with raw results in [`bench/conduit/results/`](bench/conduit/results/).
 
 Same workload as [gramkit's Performance section](https://github.com/tonysafonov/gramkit#performance); the numbers above come from one night on one box, so compare them with each other, not with other dates (the box drifts by ~10%).
 
