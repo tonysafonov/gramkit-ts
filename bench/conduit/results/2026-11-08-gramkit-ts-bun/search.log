@@ -1,0 +1,77 @@
+[00:47:04] === search 2026-11-08-gramkit-ts-bun: lang gramkit-ts-bun, target http://<target> (root@<target>), boxes [{local 1}]
+[00:47:05] target: tz +0000, 2 cores
+[00:47:05] warmup       500 users [500], ramp 1m0s + 2m0s, start 00:47:10
+[00:50:27] warmup          500 users      131 req/s  p50    3.2  p95     7.3  p99    11.9 ms  err  0.00%  lgCPU 1%  PASS
+[00:50:35] probe-500    500 users [500], ramp 1m0s + 1m0s, start 00:50:40
+[00:52:57] probe-500       500 users      130 req/s  p50    3.1  p95     6.7  p99     9.7 ms  err  0.00%  lgCPU 1%  PASS
+[00:53:05] probe-1000   1000 users [1000], ramp 1m0s + 1m0s, start 00:53:10
+[00:55:26] probe-1000     1000 users      264 req/s  p50    3.5  p95     8.8  p99    13.7 ms  err  0.00%  lgCPU 2%  PASS
+[00:55:34] probe-2000   2000 users [2000], ramp 1m0s + 1m0s, start 00:55:39
+[00:57:57] probe-2000     2000 users      536 req/s  p50    6.0  p95    39.1  p99   105.1 ms  err  0.00%  lgCPU 2%  PASS
+[00:58:05] probe-4000   4000 users [4000], ramp 1m0s + 1m0s, start 00:58:10
+[01:00:29] probe-4000     4000 users      702 req/s  p50 1953.8  p95  2334.7  p99  2418.7 ms  err  0.00%  lgCPU 3%  FAIL
+[01:00:29]   fail: p95 2335 ms >= 500, p99 2419 ms >= 1000
+[01:00:37] probe-3000   3000 users [3000], ramp 1m0s + 1m0s, start 01:00:42
+[01:02:58] probe-3000     3000 users      719 req/s  p50  390.1  p95   614.4  p99   667.6 ms  err  0.00%  lgCPU 3%  FAIL
+[01:02:58]   fail: p95 614 ms >= 500
+[01:03:06] probe-2500   2500 users [2500], ramp 1m0s + 1m0s, start 01:03:11
+[01:05:28] probe-2500     2500 users      667 req/s  p50   11.3  p95    53.0  p99    87.9 ms  err  0.00%  lgCPU 3%  PASS
+[01:05:36] probe-2800   2800 users [2800], ramp 1m0s + 1m0s, start 01:05:41
+[01:07:57] probe-2800     2800 users      725 req/s  p50  130.7  p95   288.5  p99   344.6 ms  err  0.00%  lgCPU 3%  PASS
+[01:08:05] probe-2900   2900 users [2900], ramp 1m0s + 1m0s, start 01:08:10
+[01:10:27] probe-2900     2900 users      724 req/s  p50  253.8  p95   424.4  p99   509.7 ms  err  0.00%  lgCPU 3%  PASS
+[01:10:27] probes: highest pass 2900, lowest fail 3000
+[01:10:35] hold-2900    2900 users [2900], ramp 1m0s + 5m0s, start 01:10:40
+[01:16:57] hold-2900      2900 users      710 req/s  p50  288.3  p95   597.5  p99  1029.6 ms  err  0.00%  lgCPU 3%  FAIL
+[01:16:57]   fail: p95 598 ms >= 500, p99 1030 ms >= 1000
+[01:17:05] hold-2800    2800 users [2800], ramp 1m0s + 5m0s, start 01:17:10
+[01:23:27] hold-2800      2800 users      706 req/s  p50  180.1  p95   409.3  p99   530.4 ms  err  0.00%  lgCPU 3%  PASS
+[01:23:27] RESULT: score 2800 users (5-minute hold passed)
+
+2026-11-08-gramkit-ts-bun  (lang gramkit-ts-bun, target http://<target>)
+SCORE: 2800 users held 5 minutes
+probes: highest pass 2900, lowest fail 3000
+
+hold at 2800 users: 706 req/s, p50 180.1 ms, p95 409.3 ms, p99 530.4 ms, errors 0.000%
+target over the hold window (299 samples): cpu 100%, steal 0%, app 45% / db 41% / nginx 7% (of one core)
+
+2800 users on 1 box(es), http://<target>, measured 300 s after a 60 s ramp
+endpoint                                      count    req/s      p50      p90      p95      p99      max    err%
+GET /api/tags                                 42273    140.9    163.3    326.9    394.5    514.8      827    0.00
+GET /api/articles/:slug                       41910    139.7    178.9    340.0    406.8    526.8      862    0.00
+GET /api/articles/:slug/comments              41850    139.5    179.8    341.0    405.8    523.3      854    0.00
+GET /api/articles                             25197     84.0    187.3    350.2    417.0    533.0      850    0.00
+GET /api/articles/feed                        17062     56.9    194.4    359.9    422.9    539.6      847    0.00
+GET /api/profiles/:username                   11498     38.3    171.9    331.5    399.6    515.6      852    0.00
+GET /api/articles?author                       9228     30.8    190.8    349.2    419.8    535.0      865    0.00
+GET /api/articles?tag                          8954     29.8    196.2    360.7    429.8    554.0      851    0.00
+POST /api/articles/:slug/favorite              4058     13.5    192.6    352.0    411.6    544.3      866    0.00
+POST /api/articles/:slug/comments              2864      9.5    189.2    352.5    431.1    546.8      854    0.00
+GET /api/articles?favorited                    2279      7.6    192.0    355.8    411.6    553.0      674    0.00
+POST /api/profiles/:username/follow            1160      3.9    176.9    337.9    401.9    557.6      833    0.00
+GET /api/user                                   987      3.3    171.9    310.5    363.8    504.1      831    0.00
+POST /api/articles                              863      2.9    212.4    381.2    454.4    551.4      838    0.00
+DELETE /api/articles/:slug/favorite             470      1.6    198.3    364.5    423.7    525.8      701    0.00
+DELETE /api/profiles/:username/follow           426      1.4    182.0    341.5    396.3    484.4      586    0.00
+PUT /api/user                                   337      1.1    181.8    310.3    357.9    486.1      556    0.00
+POST /api/users/login                           219      0.7    399.9    579.1    667.6    756.2      825    0.00
+DELETE /api/articles/:slug/comments/:id         129      0.4    179.8    348.2    406.8    472.3      524    0.00
+PUT /api/articles/:slug                          58      0.2    214.9    363.0    419.1    439.8      441    0.00
+POST /api/users                                   5      0.0    440.1    647.2    647.2    647.2      647    0.00
+ALL                                          211827    706.1    180.1    343.3    409.3    530.4      866    0.00
+mix: 1.86 calls/page, 0.252 req/s per user, 4.9% writes, 114077 page views
+box 0 (gramkit-perf-loader): 2800 users, CPU avg 3% max 13%, loadgen proc 3%, RSS peak 89 MB, 2802 TCP connects, behind=false
+verdict: PASS   [p95 < 500 ms, p99 < 1000 ms, errors < 1%]
+lg_limited: no
+
+phase         users   pass  lg     req/s     p50     p95     p99   err%
+probe-500       500   true  false     130     3.1     6.7     9.7   0.00
+probe-1000     1000   true  false     264     3.5     8.8    13.7   0.00
+probe-2000     2000   true  false     536     6.0    39.1   105.1   0.00
+probe-4000     4000   false false     702  1953.8  2334.7  2418.7   0.00
+probe-3000     3000   false false     719   390.1   614.4   667.6   0.00
+probe-2500     2500   true  false     667    11.3    53.0    87.9   0.00
+probe-2800     2800   true  false     725   130.7   288.5   344.6   0.00
+probe-2900     2900   true  false     724   253.8   424.4   509.7   0.00
+hold-2900      2900   false false     710   288.3   597.5  1029.6   0.00
+hold-2800      2800   true  false     706   180.1   409.3   530.4   0.00

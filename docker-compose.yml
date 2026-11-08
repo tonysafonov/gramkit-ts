@@ -1,0 +1,76 @@
+name: gramkit-ts
+
+# `make up` starts Postgres and Redis for development. `docker compose --profile app up --build` also runs the app: the
+# image is the Node build, and `.env` needs a real BOT__TOKEN.
+x-app: &app
+  build: .
+  image: gramkit-ts
+  profiles: [app]
+  env_file: .env
+  environment:
+    DB__HOST: db
+    DB__PORT: "5432"
+    REDIS__HOST: redis
+    REDIS__PORT: "6379"
+  restart: unless-stopped
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+    redis:
+      condition: service_healthy
+
+services:
+  migrate:
+    <<: *app
+    restart: "no"
+    command: ["node", "dist/migrate.node.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *app
+    ports:
+      - "8000:8000"
+    command: ["node", "dist/main.node.js"]
+
+  bot:
+    <<: *app
+    command: ["node", "dist/bot.node.js"]
+
+  worker:
+    <<: *app
+    command: ["node", "dist/worker.node.js"]
+
+  db:
+    image: postgres:17-alpine
+    container_name: gramkit-ts-pg
+    restart: unless-stopped
+    ports:
+      - "5460:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gramkit
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gramkit"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    container_name: gramkit-ts-redis
+    restart: unless-stopped
+    ports:
+      - "6395:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  pgdata:

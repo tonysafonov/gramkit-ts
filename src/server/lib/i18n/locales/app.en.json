@@ -1,0 +1,22 @@
+{
+  "demo": {
+    "notification": {
+      "message": "🔔 <b>Test Notification</b>\n\nThis notification was scheduled {delay_seconds} seconds ago.\n\n<i>Sent from Template Demo App</i>"
+    }
+  },
+  "app": {
+    "menu": "Hello! I'm a template bot. You can customize me for your needs.",
+    "open_app_button": "🚀 Open App",
+    "notifications": {
+      "daily": {
+        "message_1": "👋 Good morning! Something new is waiting for you in the app.",
+        "message_2": "✨ Your daily update is ready — take a look!",
+        "message_3": "📅 A new day, a new reason to open the app."
+      },
+      "engagement": {
+        "message_1": "🚀 We've added new features — come and try them out!",
+        "message_2": "💡 Haven't seen you in a while. Here's what's new in the app."
+      }
+    }
+  }
+}

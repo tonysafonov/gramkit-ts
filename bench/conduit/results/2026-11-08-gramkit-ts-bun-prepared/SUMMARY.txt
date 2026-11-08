@@ -1,0 +1,47 @@
+2026-11-08-gramkit-ts-bun-prepared  (lang gramkit-ts-bun-prepared, target http://<target>)
+SCORE: 3700 users held 5 minutes
+probes: highest pass 3900, lowest fail 4000
+
+hold at 3700 users: 953 req/s, p50 77.6 ms, p95 283.9 ms, p99 608.8 ms, errors 0.000%
+target over the hold window (299 samples): cpu 99%, steal 0%, app 51% / db 33% / nginx 8% (of one core)
+
+3700 users on 1 box(es), http://<target>, measured 300 s after a 60 s ramp
+endpoint                                      count    req/s      p50      p90      p95      p99      max    err%
+GET /api/articles/:slug                       56936    189.8     73.9    212.7    282.9    624.1     1026    0.00
+GET /api/articles/:slug/comments              56869    189.6     77.4    214.0    281.3    578.0     1046    0.00
+GET /api/tags                                 56734    189.1     69.6    206.8    274.7    611.3     1014    0.00
+GET /api/articles                             33786    112.6     84.2    221.8    286.2    592.4     1052    0.00
+GET /api/articles/feed                        22956     76.5     85.4    220.3    287.2    582.7     1029    0.00
+GET /api/profiles/:username                   15365     51.2     73.9    210.6    276.0    633.9     1003    0.00
+GET /api/articles?author                      12272     40.9     81.1    217.5    281.3    603.1     1035    0.00
+GET /api/articles?tag                         12231     40.8     86.8    223.1    290.6    629.8     1021    0.00
+POST /api/articles/:slug/favorite              5549     18.5     87.2    237.7    325.4    696.8     1032    0.00
+POST /api/articles/:slug/comments              3834     12.8     81.0    221.2    293.4    662.0     1015    0.00
+GET /api/articles?favorited                    3092     10.3     80.0    215.0    271.1    550.4      971    0.00
+POST /api/profiles/:username/follow            1628      5.4     81.3    219.9    288.5    720.4      977    0.00
+GET /api/user                                  1367      4.6     72.8    204.2    272.9    576.5     1038    0.00
+POST /api/articles                             1261      4.2    110.7    244.0    297.7    565.8     1036    0.00
+DELETE /api/articles/:slug/favorite             602      2.0     92.0    239.7    369.7    805.9     1020    0.00
+DELETE /api/profiles/:username/follow           578      1.9     85.7    233.3    327.2    645.6      950    0.00
+PUT /api/user                                   443      1.5     77.3    209.5    258.8    518.7      744    0.00
+POST /api/users/login                           287      1.0    297.2    415.5    473.6    621.1      736    0.00
+DELETE /api/articles/:slug/comments/:id         188      0.6    117.9    252.8    433.2    695.8      956    0.00
+PUT /api/articles/:slug                          60      0.2     76.2    207.9    222.5    272.1      533    0.00
+POST /api/users                                   4      0.0    259.8    411.1    411.1    411.1      411    0.00
+ALL                                          286042    953.5     77.6    215.8    283.9    608.8     1052    0.00
+mix: 1.86 calls/page, 0.258 req/s per user, 4.9% writes, 154088 page views
+box 0 (gramkit-perf-loader): 3700 users, CPU avg 4% max 14%, loadgen proc 4%, RSS peak 113 MB, 3717 TCP connects, behind=false
+verdict: PASS   [p95 < 500 ms, p99 < 1000 ms, errors < 1%]
+lg_limited: no
+
+phase         users   pass  lg     req/s     p50     p95     p99   err%
+probe-500       500   true  false     131     2.4     5.5     8.3   0.00
+probe-1000     1000   true  false     268     2.6     8.5   349.4   0.00
+probe-2000     2000   true  false     536     3.3    12.0    25.1   0.00
+probe-4000     4000   false false     924   396.0  1567.7  2383.9   0.00
+probe-3000     3000   true  false     794     6.6    33.3    75.6   0.00
+probe-3500     3500   true  false     911    20.1   324.6   691.2   0.00
+probe-3800     3800   true  false     966    95.5   274.4   327.4   0.00
+probe-3900     3900   true  false     988   179.7   365.1   426.5   0.00
+hold-3900      3900   false false     960   255.5   598.0   930.8   0.00
+hold-3700      3700   true  false     953    77.6   283.9   608.8   0.00

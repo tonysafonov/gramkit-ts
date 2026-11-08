@@ -1,0 +1,235 @@
+diff --color -ru a/bench/conduit/src/repos/articles.ts b/bench/conduit/src/repos/articles.ts
+--- a/bench/conduit/src/repos/articles.ts	2026-11-07 23:54:19
++++ b/bench/conduit/src/repos/articles.ts	2026-11-07 23:54:19
+@@ -80,12 +80,17 @@
+   /** The page, then the capped count. */
+   private async page(page: PromiseLike<ArticleListRow[]>, capped: Subquery): Promise<ArticlePage> {
+     const rows = await page;
+-    const counted = await this.db.select({ total: count() }).from(capped);
++    const counted = await this.db.select({ total: count() }).from(capped).prepare('articlesCount').execute();
+     return { rows, total: counted[0]?.total ?? 0 };
+   }
+ 
+   listAll(viewer: number, limit: number, offset: number): Promise<ArticlePage> {
+-    const page = articleSelect(this.db, viewer).orderBy(desc(articles.id)).limit(limit).offset(offset);
++    const page = articleSelect(this.db, viewer)
++      .orderBy(desc(articles.id))
++      .limit(limit)
++      .offset(offset)
++      .prepare('articlesPage')
++      .execute();
+     return this.page(page, this.one().from(articles).limit(COUNT_CAP).as('s'));
+   }
+ 
+@@ -97,7 +102,11 @@
+       .orderBy(desc(articleTags.articleId))
+       .limit(limit)
+       .offset(offset);
+-    const page = articleSelect(this.db, viewer).where(inArray(articles.id, ids)).orderBy(desc(articles.id));
++    const page = articleSelect(this.db, viewer)
++      .where(inArray(articles.id, ids))
++      .orderBy(desc(articles.id))
++      .prepare('articlesByTag')
++      .execute();
+     const capped = this.one()
+       .from(articleTags)
+       .where(eq(articleTags.tagId, this.tagId(tag)))
+@@ -111,7 +120,9 @@
+       .where(eq(articles.authorId, this.userId(author)))
+       .orderBy(desc(articles.id))
+       .limit(limit)
+-      .offset(offset);
++      .offset(offset)
++      .prepare('articlesByAuthor')
++      .execute();
+     const capped = this.one()
+       .from(articles)
+       .where(eq(articles.authorId, this.userId(author)))
+@@ -128,7 +139,11 @@
+       .orderBy(desc(favorites.articleId))
+       .limit(limit)
+       .offset(offset);
+-    const page = articleSelect(this.db, viewer).where(inArray(articles.id, ids)).orderBy(desc(articles.id));
++    const page = articleSelect(this.db, viewer)
++      .where(inArray(articles.id, ids))
++      .orderBy(desc(articles.id))
++      .prepare('articlesFavoritedBy')
++      .execute();
+     const capped = this.one()
+       .from(favorites)
+       .where(eq(favorites.userId, this.userId(username)))
+@@ -154,24 +169,33 @@
+       .orderBy(desc(latest.id))
+       .limit(limit)
+       .offset(offset);
+-    const page = articleSelect(this.db, viewer).where(inArray(articles.id, ids)).orderBy(desc(articles.id));
++    const page = articleSelect(this.db, viewer)
++      .where(inArray(articles.id, ids))
++      .orderBy(desc(articles.id))
++      .prepare('articlesFeed')
++      .execute();
+     const followees = this.db.select({ id: follows.followeeId }).from(follows).where(eq(follows.followerId, viewer));
+     const capped = this.one().from(articles).where(inArray(articles.authorId, followees)).limit(COUNT_CAP).as('s');
+     return this.page(page, capped);
+   }
+ 
+   async getFullBySlug(viewer: number, slug: string) {
+-    const rows = await fullSelect(this.db, viewer).where(eq(articles.slug, slug));
++    const rows = await fullSelect(this.db, viewer).where(eq(articles.slug, slug)).prepare('articleBySlug').execute();
+     return rows[0] ?? null;
+   }
+ 
+   async getFullById(viewer: number, articleId: number) {
+-    const rows = await fullSelect(this.db, viewer).where(eq(articles.id, articleId));
++    const rows = await fullSelect(this.db, viewer).where(eq(articles.id, articleId)).prepare('articleById').execute();
+     return rows[0] ?? null;
+   }
+ 
+   async getIdBySlug(slug: string): Promise<number | null> {
+-    const rows = await this.db.select({ id: articles.id }).from(articles).where(eq(articles.slug, slug));
++    const rows = await this.db
++      .select({ id: articles.id })
++      .from(articles)
++      .where(eq(articles.slug, slug))
++      .prepare('articleId')
++      .execute();
+     return rows[0]?.id ?? null;
+   }
+ 
+@@ -179,7 +203,9 @@
+     const rows = await this.db
+       .select({ id: articles.id, authorId: articles.authorId })
+       .from(articles)
+-      .where(eq(articles.slug, slug));
++      .where(eq(articles.slug, slug))
++      .prepare('articleOwner')
++      .execute();
+     return rows[0] ?? null;
+   }
+ 
+@@ -238,10 +264,14 @@
+   }
+ 
+   async favorite(userId: number, articleId: number): Promise<void> {
+-    await this.db.insert(favorites).values({ userId, articleId }).onConflictDoNothing();
++    await this.db.insert(favorites).values({ userId, articleId }).onConflictDoNothing().prepare('favorite').execute();
+   }
+ 
+   async unfavorite(userId: number, articleId: number): Promise<void> {
+-    await this.db.delete(favorites).where(and(eq(favorites.userId, userId), eq(favorites.articleId, articleId)));
++    await this.db
++      .delete(favorites)
++      .where(and(eq(favorites.userId, userId), eq(favorites.articleId, articleId)))
++      .prepare('unfavorite')
++      .execute();
+   }
+ }
+diff --color -ru a/bench/conduit/src/repos/comments.ts b/bench/conduit/src/repos/comments.ts
+--- a/bench/conduit/src/repos/comments.ts	2026-11-07 23:54:19
++++ b/bench/conduit/src/repos/comments.ts	2026-11-07 23:54:19
+@@ -27,7 +27,9 @@
+       .innerJoin(users, eq(users.id, comments.authorId))
+       .where(eq(comments.articleId, articleId))
+       .orderBy(desc(comments.createdAt), desc(comments.id))
+-      .limit(COMMENTS_CAP);
++      .limit(COMMENTS_CAP)
++      .prepare('commentsForArticle')
++      .execute();
+   }
+ 
+   async add(articleId: number, authorId: number, body: string) {
+@@ -52,7 +54,9 @@
+         image: users.image,
+       })
+       .from(c)
+-      .innerJoin(users, eq(users.id, c.authorId));
++      .innerJoin(users, eq(users.id, c.authorId))
++      .prepare('addComment')
++      .execute();
+     return rows[0] as NonNullable<(typeof rows)[0]>;
+   }
+ 
+@@ -61,11 +65,13 @@
+       .select({ authorId: comments.authorId })
+       .from(comments)
+       .innerJoin(articles, eq(articles.id, comments.articleId))
+-      .where(and(eq(comments.id, commentId), eq(articles.slug, slug)));
++      .where(and(eq(comments.id, commentId), eq(articles.slug, slug)))
++      .prepare('commentAuthor')
++      .execute();
+     return rows[0]?.authorId ?? null;
+   }
+ 
+   async deleteComment(commentId: number): Promise<void> {
+-    await this.db.delete(comments).where(eq(comments.id, commentId));
++    await this.db.delete(comments).where(eq(comments.id, commentId)).prepare('deleteComment').execute();
+   }
+ }
+diff --color -ru a/bench/conduit/src/repos/tags.ts b/bench/conduit/src/repos/tags.ts
+--- a/bench/conduit/src/repos/tags.ts	2026-11-07 23:54:19
++++ b/bench/conduit/src/repos/tags.ts	2026-11-07 23:54:19
+@@ -8,7 +8,7 @@
+   }
+ 
+   async allNames(): Promise<string[]> {
+-    const rows = await this.db.select({ name: tags.name }).from(tags).orderBy(tags.name);
++    const rows = await this.db.select({ name: tags.name }).from(tags).orderBy(tags.name).prepare('allTags').execute();
+     return rows.map((row) => row.name);
+   }
+ }
+diff --color -ru a/bench/conduit/src/repos/users.ts b/bench/conduit/src/repos/users.ts
+--- a/bench/conduit/src/repos/users.ts	2026-11-07 23:54:19
++++ b/bench/conduit/src/repos/users.ts	2026-11-07 23:54:19
+@@ -39,12 +39,14 @@
+     const rows = await this.db
+       .select({ ...USER_COLUMNS, passwordHash: users.passwordHash })
+       .from(users)
+-      .where(eq(users.email, email));
++      .where(eq(users.email, email))
++      .prepare('userForLogin')
++      .execute();
+     return rows[0] ?? null;
+   }
+ 
+   async getRow(userId: number) {
+-    const rows = await this.db.select(USER_COLUMNS).from(users).where(eq(users.id, userId));
++    const rows = await this.db.select(USER_COLUMNS).from(users).where(eq(users.id, userId)).prepare('userRow').execute();
+     return rows[0] ?? null;
+   }
+ 
+@@ -80,7 +82,9 @@
+         following: followingExpr(this.db, viewer, users.id),
+       })
+       .from(users)
+-      .where(eq(users.username, username));
++      .where(eq(users.username, username))
++      .prepare('userProfile')
++      .execute();
+     return rows[0] ?? null;
+   }
+ 
+@@ -88,15 +92,21 @@
+     const rows = await this.db
+       .select({ id: users.id, username: users.username, bio: users.bio, image: users.image })
+       .from(users)
+-      .where(eq(users.username, username));
++      .where(eq(users.username, username))
++      .prepare('userByUsername')
++      .execute();
+     return rows[0] ?? null;
+   }
+ 
+   async follow(followerId: number, followeeId: number): Promise<void> {
+-    await this.db.insert(follows).values({ followerId, followeeId }).onConflictDoNothing();
++    await this.db.insert(follows).values({ followerId, followeeId }).onConflictDoNothing().prepare('follow').execute();
+   }
+ 
+   async unfollow(followerId: number, followeeId: number): Promise<void> {
+-    await this.db.delete(follows).where(and(eq(follows.followerId, followerId), eq(follows.followeeId, followeeId)));
++    await this.db
++      .delete(follows)
++      .where(and(eq(follows.followerId, followerId), eq(follows.followeeId, followeeId)))
++      .prepare('unfollow')
++      .execute();
+   }
+ }

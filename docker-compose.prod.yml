@@ -1,0 +1,120 @@
+name: gramkit-ts-prod
+
+# Production: webhook (API), bot, worker, frontend (nginx), postgres, redis.
+#
+#   cp .env.example .env     # set ENVIRONMENT=production, BOT__TOKEN, DB__PASSWORD, ... (README: Deploy)
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# RUNTIME=node (default) runs the esbuild bundles on Node 24; RUNTIME=bun runs the TypeScript source on Bun. It is a
+# build arg: set it in .env or on the command line. Only the frontend publishes a port (FRONTEND_PORT, default 8080):
+# put TLS in front of it. Compose reads .env for the ${...} below; the containers read it through env_file, and the
+# `environment` block wins over it for the hosts.
+x-backend: &backend
+  build:
+    context: .
+    args:
+      RUNTIME: ${RUNTIME:-node}
+  image: gramkit-ts:${RUNTIME:-node}
+  env_file: ${ENV_FILE:-.env}
+  environment:
+    DB__HOST: db
+    DB__PORT: "5432"
+    REDIS__HOST: redis
+    REDIS__PORT: "6379"
+  restart: always
+  networks: [internal]
+
+services:
+  # The API. Applies pending migrations on start, then serves on :8000 (WORKERS processes behind one port).
+  webhook:
+    <<: *backend
+    command: ["api"]
+    stop_grace_period: 40s
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "docker-entrypoint.sh", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 40s
+
+  bot:
+    <<: *backend
+    command: ["bot"]
+    depends_on:
+      webhook:
+        condition: service_healthy
+
+  worker:
+    <<: *backend
+    command: ["worker"]
+    depends_on:
+      webhook:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_BASE_PATH: ${VITE_BASE_PATH:-/}
+        VITE_API_HOST: ${VITE_API_HOST:-/}
+        VITE_APP_NAME: ${VITE_APP_NAME:-}
+        VITE_ENVIRONMENT: ${VITE_ENVIRONMENT:-production}
+        VITE_DEBUG: ${VITE_DEBUG:-false}
+        VITE_POSTHOG_KEY: ${VITE_POSTHOG_KEY:-}
+        VITE_POSTHOG_HOST: ${VITE_POSTHOG_HOST:-}
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
+        VITE_SENTRY_ORG: ${VITE_SENTRY_ORG:-}
+        VITE_SENTRY_PROJECT: ${VITE_SENTRY_PROJECT:-}
+        VITE_SENTRY_AUTH_TOKEN: ${VITE_SENTRY_AUTH_TOKEN:-}
+    image: gramkit-ts-frontend
+    restart: always
+    networks: [internal]
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      webhook:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: always
+    networks: [internal]
+    environment:
+      POSTGRES_USER: ${DB__USER:-postgres}
+      POSTGRES_PASSWORD: ${DB__PASSWORD:?set DB__PASSWORD in .env}
+      POSTGRES_DB: ${DB__NAME:-gramkit}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    networks: [internal]
+    environment:
+      REDIS_PASSWORD: ${REDIS__PASSWORD:-}
+    command: ["sh", "-c", 'exec redis-server --appendonly yes $${REDIS_PASSWORD:+--requirepass "$$REDIS_PASSWORD"}']
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", 'redis-cli -a "$${REDIS_PASSWORD:-}" --no-auth-warning ping | grep -q PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+networks:
+  internal:
+
+volumes:
+  pgdata:
+  redisdata:

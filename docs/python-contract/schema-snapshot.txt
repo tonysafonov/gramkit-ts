@@ -1,0 +1,232 @@
+col admin_audit_logs.action varchar(64) NOT NULL
+col admin_audit_logs.actor_role varchar(20) NOT NULL
+col admin_audit_logs.actor_telegram_id int8
+col admin_audit_logs.actor_user_id uuid
+col admin_audit_logs.actor_username varchar(128)
+col admin_audit_logs.created_at timestamptz NOT NULL DEFAULT now()
+col admin_audit_logs.detail jsonb
+col admin_audit_logs.id int4 NOT NULL DEFAULT nextval('admin_audit_logs_id_seq'::regclass)
+col admin_audit_logs.target_id varchar(64)
+col admin_audit_logs.target_type varchar(64)
+col balances.created_at timestamptz NOT NULL DEFAULT now()
+col balances.updated_at timestamptz NOT NULL DEFAULT now()
+col balances.user_id uuid NOT NULL
+col failed_webhooks.created_at timestamptz NOT NULL DEFAULT now()
+col failed_webhooks.error_message text NOT NULL
+col failed_webhooks.error_type varchar(50) NOT NULL
+col failed_webhooks.id int4 NOT NULL DEFAULT nextval('failed_webhooks_id_seq'::regclass)
+col failed_webhooks.last_retry_at timestamptz
+col failed_webhooks.payload json NOT NULL
+col failed_webhooks.provider varchar(50) NOT NULL
+col failed_webhooks.resolved_at timestamptz
+col failed_webhooks.resolved_by varchar(100)
+col failed_webhooks.retry_count int4 NOT NULL
+col friendships.created_at timestamptz NOT NULL DEFAULT now()
+col friendships.id int8 NOT NULL DEFAULT nextval('friendships_id_seq'::regclass)
+col friendships.is_active bool NOT NULL
+col friendships.user_id1 uuid NOT NULL
+col friendships.user_id2 uuid NOT NULL
+col group_invites.code varchar(12) NOT NULL
+col group_invites.created_at timestamptz NOT NULL DEFAULT now()
+col group_invites.creator_id uuid NOT NULL
+col group_invites.expires_at timestamptz
+col group_invites.group_id int4 NOT NULL
+col group_invites.used_count int4 NOT NULL
+col group_members.created_at timestamptz NOT NULL DEFAULT now()
+col group_members.group_id int4 NOT NULL
+col group_members.id int4 NOT NULL DEFAULT nextval('group_members_id_seq'::regclass)
+col group_members.is_admin bool NOT NULL
+col group_members.user_id uuid NOT NULL
+col groups.created_at timestamptz NOT NULL DEFAULT now()
+col groups.creator_id uuid NOT NULL
+col groups.id int4 NOT NULL DEFAULT nextval('groups_id_seq'::regclass)
+col groups.photo_url varchar(255)
+col groups.title varchar(255)
+col marketing_links.alerts_sent json NOT NULL DEFAULT '[]'::json
+col marketing_links.channel varchar(120)
+col marketing_links.code varchar(40) NOT NULL
+col marketing_links.created_at timestamptz NOT NULL DEFAULT now()
+col marketing_links.created_by varchar(128)
+col marketing_links.id int4 NOT NULL DEFAULT nextval('marketing_links_id_seq'::regclass)
+col marketing_links.is_archived bool NOT NULL DEFAULT false
+col marketing_links.price_rub float8
+col marketing_links.published_on date
+col marketing_links.updated_at timestamptz NOT NULL DEFAULT now()
+col notification_deliveries.delivered bool NOT NULL
+col notification_deliveries.error_code varchar(32)
+col notification_deliveries.id int8 NOT NULL DEFAULT nextval('notification_deliveries_id_seq'::regclass)
+col notification_deliveries.message_key varchar(128) NOT NULL
+col notification_deliveries.sent_at timestamptz NOT NULL DEFAULT now()
+col notification_deliveries.slot varchar(16) NOT NULL
+col notification_deliveries.template varchar(64) NOT NULL
+col notification_deliveries.user_id uuid NOT NULL
+col payment_events.created_at timestamptz NOT NULL DEFAULT now()
+col payment_events.event_type varchar(17) NOT NULL
+col payment_events.id uuid NOT NULL
+col payment_events.is_recurring bool NOT NULL
+col payment_events.payment_id uuid NOT NULL
+col payment_events.provider_id varchar(14) NOT NULL
+col payment_events.raw_data json NOT NULL
+col payment_events.timestamp timestamptz NOT NULL
+col payments.amount float8 NOT NULL
+col payments.created_at timestamptz NOT NULL DEFAULT now()
+col payments.currency varchar(3) NOT NULL
+col payments.id uuid NOT NULL
+col payments.idempotency_key varchar(64)
+col payments.is_recurring bool NOT NULL
+col payments.product_id varchar(50) NOT NULL
+col payments.provider_id varchar(14) NOT NULL
+col payments.provider_metadata json NOT NULL
+col payments.provider_payment_id varchar(255)
+col payments.status varchar(18) NOT NULL
+col payments.subscription_id uuid
+col payments.updated_at timestamptz NOT NULL DEFAULT now()
+col payments.user_id uuid NOT NULL
+col payments.was_rewarded bool NOT NULL
+col promotional_broadcasts.caption text
+col promotional_broadcasts.caption_html text
+col promotional_broadcasts.completed_at timestamptz
+col promotional_broadcasts.created_at timestamptz NOT NULL DEFAULT now()
+col promotional_broadcasts.created_by_user_id int8 NOT NULL
+col promotional_broadcasts.cycles_run int4 NOT NULL DEFAULT 0
+col promotional_broadcasts.deadline timestamptz NOT NULL
+col promotional_broadcasts.fail_count int4 NOT NULL DEFAULT 0
+col promotional_broadcasts.has_caption_formatting bool NOT NULL
+col promotional_broadcasts.has_text_formatting bool NOT NULL
+col promotional_broadcasts.id int4 NOT NULL DEFAULT nextval('promotional_broadcasts_id_seq'::regclass)
+col promotional_broadcasts.is_active bool NOT NULL
+col promotional_broadcasts.keyboard_button_text varchar(255)
+col promotional_broadcasts.keyboard_type varchar(50)
+col promotional_broadcasts.last_sent_at timestamptz
+col promotional_broadcasts.media_file_id varchar(255)
+col promotional_broadcasts.media_metadata jsonb
+col promotional_broadcasts.message_html text
+col promotional_broadcasts.message_text text
+col promotional_broadcasts.message_type varchar(20) NOT NULL
+col promotional_broadcasts.priority int4 NOT NULL
+col promotional_broadcasts.sent_count int4 NOT NULL DEFAULT 0
+col promotional_broadcasts.success_count int4 NOT NULL DEFAULT 0
+col promotional_broadcasts.target_filter jsonb
+col promotional_broadcasts.time_slot varchar(7) NOT NULL
+col promotional_broadcasts.updated_at timestamptz NOT NULL DEFAULT now()
+col subscriptions.canceled_at timestamptz
+col subscriptions.cancellation_feedback text
+col subscriptions.cancellation_reason varchar(50)
+col subscriptions.created_at timestamptz NOT NULL DEFAULT now()
+col subscriptions.currency varchar(3) NOT NULL
+col subscriptions.end_date timestamptz NOT NULL
+col subscriptions.failed_renewal_count int4 NOT NULL DEFAULT 0
+col subscriptions.id uuid NOT NULL
+col subscriptions.last_renewal_attempt_at timestamptz
+col subscriptions.payment_method_id varchar(64)
+col subscriptions.product_id varchar(50) NOT NULL
+col subscriptions.provider_id varchar(14) NOT NULL
+col subscriptions.recurring_details json NOT NULL
+col subscriptions.start_date timestamptz NOT NULL
+col subscriptions.status varchar(8) NOT NULL
+col subscriptions.updated_at timestamptz NOT NULL DEFAULT now()
+col subscriptions.user_id uuid NOT NULL
+col users.avatar_url varchar(500)
+col users.best_streak int4 NOT NULL
+col users.birth_date date
+col users.bot_blocked_at timestamptz
+col users.created_at timestamptz NOT NULL DEFAULT now()
+col users.current_streak int4 NOT NULL
+col users.display_name varchar(255)
+col users.email varchar(255)
+col users.email_verified bool NOT NULL DEFAULT false
+col users.email_verified_at timestamptz
+col users.id uuid NOT NULL
+col users.is_onboarded bool
+col users.is_terms_accepted bool
+col users.language_code varchar(10)
+col users.last_activity_date date
+col users.last_login_at timestamptz
+col users.male bool
+col users.password_hash varchar(255)
+col users.referral_code varchar(40)
+col users.role varchar(20) NOT NULL
+col users.seen_features jsonb NOT NULL DEFAULT '{}'::jsonb
+col users.telegram_id int8
+col users.tg_added_to_attachment_menu bool
+col users.tg_allows_write_to_pm bool
+col users.tg_first_name varchar(64)
+col users.tg_is_bot bool
+col users.tg_is_premium bool
+col users.tg_language_code varchar(8)
+col users.tg_last_name varchar(64)
+col users.tg_photo_url varchar(500)
+col users.tg_username varchar(32)
+col users.timezone varchar(50)
+col users.total_active_days int4 NOT NULL
+col users.updated_at timestamptz NOT NULL DEFAULT now()
+col users.user_type varchar(10) NOT NULL
+col users.username varchar(128)
+con admin_audit_logs admin_audit_logs_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE SET NULL
+con admin_audit_logs admin_audit_logs_pkey PRIMARY KEY (id)
+con balances balances_pkey PRIMARY KEY (user_id)
+con balances balances_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+con failed_webhooks failed_webhooks_pkey PRIMARY KEY (id)
+con friendships friendships_pkey PRIMARY KEY (user_id1, user_id2)
+con friendships friendships_user_id1_fkey FOREIGN KEY (user_id1) REFERENCES users(id) ON DELETE CASCADE
+con friendships friendships_user_id2_fkey FOREIGN KEY (user_id2) REFERENCES users(id) ON DELETE CASCADE
+con friendships uq_friendship UNIQUE (user_id1, user_id2)
+con group_invites group_invites_code_key UNIQUE (code)
+con group_invites group_invites_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+con group_invites group_invites_group_id_fkey FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
+con group_invites group_invites_pkey PRIMARY KEY (code)
+con group_members group_members_group_id_fkey FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
+con group_members group_members_pkey PRIMARY KEY (group_id, user_id)
+con group_members group_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+con groups groups_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+con groups groups_pkey PRIMARY KEY (id)
+con marketing_links marketing_links_code_key UNIQUE (code)
+con marketing_links marketing_links_pkey PRIMARY KEY (id)
+con notification_deliveries notification_deliveries_pkey PRIMARY KEY (id)
+con notification_deliveries notification_deliveries_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+con payment_events payment_events_payment_id_fkey FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE CASCADE
+con payment_events payment_events_pkey PRIMARY KEY (id)
+con payments payments_pkey PRIMARY KEY (id)
+con payments payments_subscription_id_fkey FOREIGN KEY (subscription_id) REFERENCES subscriptions(id) ON DELETE SET NULL
+con payments payments_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+con promotional_broadcasts promotional_broadcasts_pkey PRIMARY KEY (id)
+con subscriptions subscriptions_pkey PRIMARY KEY (id)
+con subscriptions subscriptions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+con users uq_users_email UNIQUE (email)
+con users uq_users_username UNIQUE (username)
+con users users_pkey PRIMARY KEY (id)
+con users users_telegram_id_key UNIQUE (telegram_id)
+idx CREATE INDEX ix_admin_audit_logs_action ON public.admin_audit_logs USING btree (action)
+idx CREATE INDEX ix_admin_audit_logs_actor_user_id ON public.admin_audit_logs USING btree (actor_user_id)
+idx CREATE INDEX ix_admin_audit_logs_created_at ON public.admin_audit_logs USING btree (created_at)
+idx CREATE INDEX ix_friendships_user_id1 ON public.friendships USING btree (user_id1)
+idx CREATE INDEX ix_friendships_user_id2 ON public.friendships USING btree (user_id2)
+idx CREATE INDEX ix_notification_deliveries_user_id_sent_at ON public.notification_deliveries USING btree (user_id, sent_at)
+idx CREATE INDEX ix_payment_events_payment_id ON public.payment_events USING btree (payment_id)
+idx CREATE INDEX ix_payments_provider_payment_id ON public.payments USING btree (provider_payment_id)
+idx CREATE INDEX ix_payments_subscription_id ON public.payments USING btree (subscription_id)
+idx CREATE INDEX ix_payments_user_id ON public.payments USING btree (user_id)
+idx CREATE INDEX ix_subscriptions_user_id ON public.subscriptions USING btree (user_id)
+idx CREATE INDEX ix_users_role ON public.users USING btree (role)
+idx CREATE UNIQUE INDEX admin_audit_logs_pkey ON public.admin_audit_logs USING btree (id)
+idx CREATE UNIQUE INDEX balances_pkey ON public.balances USING btree (user_id)
+idx CREATE UNIQUE INDEX failed_webhooks_pkey ON public.failed_webhooks USING btree (id)
+idx CREATE UNIQUE INDEX friendships_pkey ON public.friendships USING btree (user_id1, user_id2)
+idx CREATE UNIQUE INDEX group_invites_code_key ON public.group_invites USING btree (code)
+idx CREATE UNIQUE INDEX group_invites_pkey ON public.group_invites USING btree (code)
+idx CREATE UNIQUE INDEX group_members_pkey ON public.group_members USING btree (group_id, user_id)
+idx CREATE UNIQUE INDEX groups_pkey ON public.groups USING btree (id)
+idx CREATE UNIQUE INDEX marketing_links_code_key ON public.marketing_links USING btree (code)
+idx CREATE UNIQUE INDEX marketing_links_pkey ON public.marketing_links USING btree (id)
+idx CREATE UNIQUE INDEX notification_deliveries_pkey ON public.notification_deliveries USING btree (id)
+idx CREATE UNIQUE INDEX payment_events_pkey ON public.payment_events USING btree (id)
+idx CREATE UNIQUE INDEX payments_pkey ON public.payments USING btree (id)
+idx CREATE UNIQUE INDEX promotional_broadcasts_pkey ON public.promotional_broadcasts USING btree (id)
+idx CREATE UNIQUE INDEX subscriptions_pkey ON public.subscriptions USING btree (id)
+idx CREATE UNIQUE INDEX uq_friendship ON public.friendships USING btree (user_id1, user_id2)
+idx CREATE UNIQUE INDEX uq_payment_idempotency_key ON public.payments USING btree (idempotency_key) WHERE ((idempotency_key IS NOT NULL) AND ((status)::text <> ALL ((ARRAY['FAILED'::character varying, 'CANCELED'::character varying])::text[])))
+idx CREATE UNIQUE INDEX uq_subscription_active_user ON public.subscriptions USING btree (user_id) WHERE ((status)::text = ANY ((ARRAY['ACTIVE'::character varying, 'PAST_DUE'::character varying, 'PENDING'::character varying])::text[]))
+idx CREATE UNIQUE INDEX uq_users_email ON public.users USING btree (email)
+idx CREATE UNIQUE INDEX uq_users_username ON public.users USING btree (username)
+idx CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)
+idx CREATE UNIQUE INDEX users_telegram_id_key ON public.users USING btree (telegram_id)
