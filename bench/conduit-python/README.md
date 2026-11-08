@@ -1,7 +1,7 @@
 # conduit-bench: gramkit on Arjay's multicore benchmark
 
 > **In this repo:** a copy of the Python gramkit bench, so both sides of the comparison are reproducible. It builds
-> from a [gramkit](https://github.com/AHTOOOXA/gramkit) checkout: copy this folder to `apps/conduit-bench/` there and
+> from a [gramkit](https://github.com/tonysafonov/gramkit) checkout: copy this folder to `apps/conduit-bench/` there and
 > run `apps/conduit-bench/push.sh` (it ships the checkout's `core/` and pins from its `uv.lock`). The TypeScript twin is
 > [`../conduit/`](../conduit/); results of both: [`docs/benchmarks/`](../../docs/benchmarks/).
 

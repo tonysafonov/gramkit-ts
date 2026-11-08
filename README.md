@@ -2,11 +2,11 @@
 
 Production-ready starter for Telegram Mini Apps and web applications, in TypeScript end to end.
 
-**[Live Demo](https://react.antonchaynik.ru)** · Python edition: **[gramkit](https://github.com/AHTOOOXA/gramkit)**
+**[Live Demo](https://react.antonchaynik.ru)** · Python edition: **[gramkit](https://github.com/tonysafonov/gramkit)**
 
 > The demo runs Python gramkit's backend; the UI and the REST API are the same in both editions.
 
-This is a TypeScript port of [gramkit](https://github.com/AHTOOOXA/gramkit) (Python: FastAPI + SQLAlchemy). The REST API
+This is a TypeScript port of [gramkit](https://github.com/tonysafonov/gramkit) (Python: FastAPI + SQLAlchemy). The REST API
 and the database schema are the same, so the Vue frontend talks to either backend. It runs on **Node 24+ or Bun 1.3+**,
 and the Docker image picks the runtime with a build arg.
 
@@ -129,7 +129,7 @@ on the box, 2 workers each. Score = users held 5 minutes with p95 < 500 ms, p99 
 
 Details, CPU split, memory and caveats: [`docs/benchmarks/2026-11-08-conduit.md`](docs/benchmarks/2026-11-08-conduit.md). Both benches are in this repo: [`bench/conduit/`](bench/conduit/) (TypeScript) and [`bench/conduit-python/`](bench/conduit-python/) (Python gramkit), with raw results in [`bench/conduit/results/`](bench/conduit/results/).
 
-Same workload as [gramkit's Performance section](https://github.com/AHTOOOXA/gramkit#performance); the numbers above come from one night on one box, so compare them with each other, not with other dates (the box drifts by ~10%).
+Same workload as [gramkit's Performance section](https://github.com/tonysafonov/gramkit#performance); the numbers above come from one night on one box, so compare them with each other, not with other dates (the box drifts by ~10%).
 
 ## Commands
 
